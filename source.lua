@@ -210,7 +210,7 @@ else
 		if COREGUI:FindFirstChild('RobloxGui') then
 			PARENT = COREGUI.RobloxGui
 		else
-            PARENT = COREGUI
+			PARENT = COREGUI
 		end
 	end
 	PARENT = Main
@@ -11978,7 +11978,6 @@ if aliases and #aliases > 0 then
 end
 
 IYMouse.Move:Connect(checkTT)
-
 wait()
 Logo:Destroy()
 Credits:Destroy()
