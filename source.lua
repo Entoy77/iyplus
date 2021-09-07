@@ -3,7 +3,7 @@ if IYPLUS_LOADED and not _G.IYPLUS_DEBUG == true then
 end
 
 pcall(function()
-	if getgenv() then
+	if getgenv then
 		getgenv().IYPLUS_LOADED = true
 	else
 		_G.IYPLUS_LOADED = true
