@@ -1,12 +1,12 @@
-if IY_LOADED and not _G.IY_DEBUG == true then
-	return error("IY Plus is already running!", 0)
+if IYPLUS_LOADED and not _G.IYPLUS_DEBUG == true then
+	return error("Infinite Yield Plus is already running!", 0)
 end
 
 pcall(function()
-	if getgev() then
-		getgenv().IY_LOADED = true
+	if getgenv() then
+		getgenv().IYPLUS_LOADED = true
 	else
-		_G.IY_LOADED = true
+		_G.IYPLUS_LOADED = true
 	end
 end)
 
@@ -20,7 +20,7 @@ if not game:IsLoaded() then
 	else
 		notLoaded = Instance.new("Message", game:GetService("CoreGui"))
 	end
-	notLoaded.Text = 'IY Plus is waiting for the game to load'
+	notLoaded.Text = "Infinite Yield Plus is waiting for the game to load"
 	game.Loaded:Wait()
 	notLoaded:Destroy()
 end
@@ -174,8 +174,8 @@ listlayout = Instance.new("UIListLayout",scroll_3)
 selectChat = Instance.new("TextButton")
 selectJoin = Instance.new("TextButton")
 
-function randomString()
-	local length = math.random(10,20)
+randomString = function()
+	local length = math.random(10, 20)
 	local array = {}
 	for i = 1, length do
 		array[i] = string.char(math.random(32, 126))
@@ -185,7 +185,7 @@ end
 
 COREGUI = game:GetService("CoreGui")
 PARENT = nil
-if (not is_sirhurt_closure) and (syn and syn.protect_gui) then --sirhurt is retarded
+if (not is_sirhurt_closure) and (syn and syn.protect_gui) then
 	local Main = Instance.new("ScreenGui")
 	Main.Name = randomString()
 	syn.protect_gui(Main)
@@ -197,8 +197,6 @@ elseif get_hidden_gui or gethui then
 	Main.Name = randomString()
 	Main.Parent = hiddenUI()
 	PARENT = Main
-elseif COREGUI:FindFirstChild('RobloxGui') then
-	PARENT = COREGUI.RobloxGui
 else
 	local Main = Instance.new("ScreenGui")
 	Main.Name = randomString()
@@ -243,7 +241,7 @@ Title.BorderSizePixel = 0
 Title.Size = UDim2.new(0, 250, 0, 20)
 Title.Font = Enum.Font.SourceSans
 Title.TextSize = 18
-Title.Text = "Infinite Yield Plus"
+Title.Text = "[ Loading ]"
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.ZIndex = 10
 table.insert(shade1,Title)
@@ -2988,6 +2986,7 @@ currentScroll = Color3.fromRGB(78,78,79)
 
 defaultsettings = {
 	prefix = ';';
+	adminTitle = 'Infinite Yield Plus';
 	StayOpen = false;
 	logsEnabled = false;
 	jLogsEnabled = false;
@@ -3004,6 +3003,8 @@ defaultsettings = {
 	eventBinds = eventEditor.SaveData()
 }
 
+local AdminTitleString = 'Infinite Yield Plus'
+
 defaults = game:GetService("HttpService"):JSONEncode(defaultsettings)
 
 nosaves = false
@@ -3011,11 +3012,12 @@ nosaves = false
 local loadedEventData = nil
 function saves()
 	if writefileExploit() then
-		if pcall(function() readfile("IY_FE.iy") end) then
-			if readfile("IY_FE.iy") ~= nil then
+		if pcall(function() readfile("IY_PLUS.iy") end) then
+			if readfile("IY_PLUS.iy") ~= nil then
 				local success, response = pcall(function()
-					local json = game:GetService("HttpService"):JSONDecode(readfile("IY_FE.iy"))
+					local json = game:GetService("HttpService"):JSONDecode(readfile("IY_PLUS.iy"))
 					if json.prefix ~= nil then prefix = json.prefix else prefix = ';' end
+					if json.adminTitle ~= nil then AdminTitleString = json.adminTitle else AdminTitleString = 'Infinite Yield Plus' end
 					if json.StayOpen ~= nil then StayOpen = json.StayOpen else StayOpen = false end
 					if json.logsEnabled ~= nil then logsEnabled = json.logsEnabled else logsEnabled = false end
 					if json.jLogsEnabled ~= nil then jLogsEnabled = json.jLogsEnabled else jLogsEnabled = false end
@@ -3035,23 +3037,24 @@ function saves()
 				if not success then
 					warn("Save Json Error:", response)
 					warn("Overwriting Save File")
-					writefileCooldown("IY_FE.iy", defaults)
+					writefileCooldown("IY_PLUS.iy", defaults)
 					wait()
 					saves()
 				end
 			else
-				writefileCooldown("IY_FE.iy", defaults)
+				writefileCooldown("IY_PLUS.iy", defaults)
 				wait()
 				saves()
 			end
 		else
-			writefileCooldown("IY_FE.iy", defaults)
+			writefileCooldown("IY_PLUS.iy", defaults)
 			wait()
-			if pcall(function() readfile("IY_FE.iy") end) then
+			if pcall(function() readfile("IY_PLUS.iy") end) then
 				saves()
 			else
 				nosaves = true
 				prefix = ';'
+				AdminTitleString = 'Infinite Yield Plus'
 				StayOpen = false
 				logsEnabled = false
 				jLogsEnabled = false
@@ -3141,6 +3144,7 @@ function saves()
 		end
 	else
 		prefix = ';'
+		AdminTitleString = 'Infinite Yield Plus'
 		StayOpen = false
 		logsEnabled = false
 		jLogsEnabled = false
@@ -3153,10 +3157,13 @@ end
 
 saves()
 
+Title.Text = tostring(AdminTitleString)
+
 function updatesaves()
 	if nosaves == false and writefileExploit() then
 		local update = {
 			prefix = prefix;
+			adminTitle = AdminTitleString;
 			StayOpen = StayOpen;
 			logsEnabled = logsEnabled;
 			jLogsEnabled = jLogsEnabled;
@@ -3172,7 +3179,7 @@ function updatesaves()
 			currentScroll = {currentScroll.R,currentScroll.G,currentScroll.B};
 			eventBinds = eventEditor.SaveData()
 		}
-		writefileCooldown("IY_FE.iy", game:GetService("HttpService"):JSONEncode(update))
+		writefileCooldown("IY_PLUS.iy", game:GetService("HttpService"):JSONEncode(update))
 	end
 end
 
@@ -4463,6 +4470,7 @@ CMDs[#CMDs + 1] = {NAME = 'guidelete', DESC = 'Enables backspace to delete GUI'}
 CMDs[#CMDs + 1] = {NAME = 'unguidelete / noguidelete', DESC = 'Disables guidelete'}
 CMDs[#CMDs + 1] = {NAME = 'hideiy', DESC = 'Hides the main IY GUI'}
 CMDs[#CMDs + 1] = {NAME = 'showiy / unhideiy', DESC = 'Shows IY again'}
+CMDs[#CMDs + 1] = {NAME = 'changetitle / titletext [text]', DESC = 'Change the default Holder title text to a custom string'}
 CMDs[#CMDs + 1] = {NAME = 'savegame / saveplace', DESC = 'Uses saveinstance to save the game'}
 CMDs[#CMDs + 1] = {NAME = 'clearerror', DESC = 'Clears the annoying box and blur when a game kicks you'}
 CMDs[#CMDs + 1] = {NAME = 'clientantikick / antikick (CLIENT)', DESC = 'Prevents localscripts from kicking you'}
@@ -4681,6 +4689,7 @@ CMDs[#CMDs + 1] = {NAME = 'unloopjumppower / unloopjp [num]', DESC = 'Turns off 
 CMDs[#CMDs + 1] = {NAME = 'maxslopeangle / msa [num]', DESC = 'Adjusts MaxSlopeAngle'}
 CMDs[#CMDs + 1] = {NAME = 'gravity / grav [num] (CLIENT)', DESC = 'Change your gravity'}
 CMDs[#CMDs + 1] = {NAME = 'sit', DESC = 'Makes your character sit'}
+CMDs[#CMDs + 1] = {NAME = 'lay / laydown', DESC = 'Makes your character lay down'}
 CMDs[#CMDs + 1] = {NAME = 'sitwalk', DESC = 'Makes your character sit while still being able to walk'}
 CMDs[#CMDs + 1] = {NAME = 'nosit', DESC = 'Prevents your character from sitting'}
 CMDs[#CMDs + 1] = {NAME = 'unnosit', DESC = 'Disables nosit'}
@@ -5034,7 +5043,7 @@ function execCmd(cmdStr,speaker,store)
 				if infTimes then
 					while lastBreakTime < cmdStartTime do
 						local success,err = pcall(cmd.FUNC,args, speaker)
-						if not success and _G.IY_DEBUG then
+						if not success and _G.IYPLUS_DEBUG then
 							warn("Command Error:", cmdName, err)
 						end
 						wait(cmdDelay)
@@ -5045,7 +5054,7 @@ function execCmd(cmdStr,speaker,store)
 						local success,err = pcall(function()
 							cmd.FUNC(args, speaker)
 						end)
-						if not success and _G.IY_DEBUG then
+						if not success and _G.IYPLUS_DEBUG then
 							warn("Command Error:", cmdName, err)
 						end
 						if cmdDelay ~= 0 then wait(cmdDelay) end
@@ -6264,7 +6273,7 @@ end)
 PluginsGUI = PluginEditor.background
 
 function addPlugin(name)
-	if name:lower() == 'plugin file name' or name:lower() == 'iy_fe.iy' or name == 'iy_fe' then
+	if name:lower() == 'plugin file name' or name:lower() == 'iy_plus.iy' or name == 'iy_plus' then
 		notify('Plugin Error','Please enter a valid plugin')
 	else
 		local file
@@ -6526,6 +6535,13 @@ addcmd('getversion', {}, function(args, speaker)
 	if pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/version'))() end) then
 		notify("Version", "IY Plus: " .. ver .. "\nIY: " .. Version)
 	end
+end)
+
+addcmd('changetitle', {'titletext'}, function(args, speaker)
+	local newTitle = tostring(getstring(1))
+	AdminTitleString = newTitle
+	Title.Text = newTitle
+	updatesaves()
 end)
 
 addcmd('serverinfo',{'info','sinfo'},function(args, speaker)
@@ -9359,6 +9375,19 @@ end)
 
 addcmd('sit',{},function(args, speaker)
 	speaker.Character:FindFirstChildOfClass("Humanoid").Sit = true
+end)
+
+addcmd('lay', {'laydown'}, function(args, speaker)
+	local Human = speaker.Character and speaker.Character:FindFirstChildOfClass('Humanoid')
+	if not Human then
+		return
+	end
+	Human.Sit = true
+	wait(.1)
+	Human.RootPart.CFrame = Human.RootPart.CFrame * CFrame.Angles(math.pi * .5, 0, 0)
+	for _, v in ipairs(Human:GetPlayingAnimationTracks()) do
+		v:Stop()
+	end
 end)
 
 addcmd('sitwalk',{},function(args, speaker)
