@@ -6533,15 +6533,19 @@ end)
 
 addcmd('getversion', {}, function(args, speaker)
 	if pcall(function() loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/version'))() end) then
-		notify("Version", "IY Plus: " .. ver .. "\nIY: " .. Version)
+		notify('Version', 'Infinite Yield Plus: ' .. ver .. '\nInfinite Yield: ' .. Version)
 	end
 end)
 
 addcmd('changetitle', {'titletext'}, function(args, speaker)
-	local newTitle = tostring(getstring(1))
-	AdminTitleString = newTitle
-	Title.Text = newTitle
-	updatesaves()
+	if args[1] then
+		local newTitle = tostring(getstring(1))
+		AdminTitleString = newTitle
+		Title.Text = newTitle
+		updatesaves()
+	else
+		notify('Notification', 'Missing Arguments')
+	end
 end)
 
 addcmd('serverinfo',{'info','sinfo'},function(args, speaker)
