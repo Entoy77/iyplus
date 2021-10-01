@@ -617,6 +617,7 @@ IntroBackground.BorderSizePixel = 0
 IntroBackground.Position = UDim2.new(0, 0, 0, 45)
 IntroBackground.Size = UDim2.new(0, 250, 0, 175)
 IntroBackground.ZIndex = 10
+IntroBackground.Visible = false
 
 Logo.Name = "Logo"
 Logo.Parent = Holder
@@ -627,6 +628,7 @@ Logo.Size = UDim2.new(0, 10, 0, 10)
 Logo.Image = "rbxassetid://1352543873"
 Logo.ImageTransparency = 0
 Logo.ZIndex = 10
+Logo.Visible = false
 
 Credits.Name = "Credits"
 Credits.Parent = Holder
@@ -639,6 +641,7 @@ Credits.FontSize = Enum.FontSize.Size18
 Credits.Text = "Edge // Zwolf // Moon // Hunter"
 Credits.TextColor3 = Color3.new(1, 1, 1)
 Credits.ZIndex = 10
+Credits.Visible = false
 
 KeybindsFrame.Name = "KeybindsFrame"
 KeybindsFrame.Parent = Settings
@@ -3003,21 +3006,24 @@ defaultsettings = {
 	eventBinds = eventEditor.SaveData()
 }
 
-local AdminTitleString = 'Infinite Yield Plus'
+local iypSettings = {
+	AdminTitleString = 'Infinite Yield Plus'
+}
 
 defaults = game:GetService("HttpService"):JSONEncode(defaultsettings)
 
 nosaves = false
 
+local saveSettingsPath = ("Infinite Yield Plus/Settings.JSON")
 local loadedEventData = nil
 function saves()
 	if writefileExploit() then
-		if pcall(function() readfile("IY_PLUS.iy") end) then
-			if readfile("IY_PLUS.iy") ~= nil then
+		if pcall(function() readfile(saveSettingsPath) end) then
+			if readfile(saveSettingsPath) ~= nil then
 				local success, response = pcall(function()
-					local json = game:GetService("HttpService"):JSONDecode(readfile("IY_PLUS.iy"))
+					local json = game:GetService("HttpService"):JSONDecode(readfile(saveSettingsPath))
 					if json.prefix ~= nil then prefix = json.prefix else prefix = ';' end
-					if json.adminTitle ~= nil then AdminTitleString = json.adminTitle else AdminTitleString = 'Infinite Yield Plus' end
+					if json.adminTitle ~= nil then iypSettings.AdminTitleString = json.adminTitle else iypSettings.AdminTitleString = 'Infinite Yield Plus' end
 					if json.StayOpen ~= nil then StayOpen = json.StayOpen else StayOpen = false end
 					if json.logsEnabled ~= nil then logsEnabled = json.logsEnabled else logsEnabled = false end
 					if json.jLogsEnabled ~= nil then jLogsEnabled = json.jLogsEnabled else jLogsEnabled = false end
@@ -3037,24 +3043,24 @@ function saves()
 				if not success then
 					warn("Save Json Error:", response)
 					warn("Overwriting Save File")
-					writefileCooldown("IY_PLUS.iy", defaults)
+					writefileCooldown(saveSettingsPath, defaults)
 					wait()
 					saves()
 				end
 			else
-				writefileCooldown("IY_PLUS.iy", defaults)
+				writefileCooldown(saveSettingsPath, defaults)
 				wait()
 				saves()
 			end
 		else
-			writefileCooldown("IY_PLUS.iy", defaults)
+			writefileCooldown(saveSettingsPath, defaults)
 			wait()
-			if pcall(function() readfile("IY_PLUS.iy") end) then
+			if pcall(function() readfile(saveSettingsPath) end) then
 				saves()
 			else
 				nosaves = true
 				prefix = ';'
-				AdminTitleString = 'Infinite Yield Plus'
+				iypSettings.AdminTitleString = 'Infinite Yield Plus'
 				StayOpen = false
 				logsEnabled = false
 				jLogsEnabled = false
@@ -3144,7 +3150,7 @@ function saves()
 		end
 	else
 		prefix = ';'
-		AdminTitleString = 'Infinite Yield Plus'
+		iypSettings.AdminTitleString = 'Infinite Yield Plus'
 		StayOpen = false
 		logsEnabled = false
 		jLogsEnabled = false
@@ -3157,13 +3163,13 @@ end
 
 saves()
 
-Title.Text = tostring(AdminTitleString)
+Title.Text = tostring(iypSettings.AdminTitleString)
 
 function updatesaves()
 	if nosaves == false and writefileExploit() then
 		local update = {
 			prefix = prefix;
-			adminTitle = AdminTitleString;
+			adminTitle = iypSettings.AdminTitleString;
 			StayOpen = StayOpen;
 			logsEnabled = logsEnabled;
 			jLogsEnabled = jLogsEnabled;
@@ -3179,7 +3185,7 @@ function updatesaves()
 			currentScroll = {currentScroll.R,currentScroll.G,currentScroll.B};
 			eventBinds = eventEditor.SaveData()
 		}
-		writefileCooldown("IY_PLUS.iy", game:GetService("HttpService"):JSONEncode(update))
+		writefileCooldown(saveSettingsPath, game:GetService("HttpService"):JSONEncode(update))
 	end
 end
 
@@ -6540,7 +6546,7 @@ end)
 addcmd('changetitle', {'titletext'}, function(args, speaker)
 	if args[1] then
 		local newTitle = tostring(getstring(1))
-		AdminTitleString = newTitle
+		iypSettings.AdminTitleString = newTitle
 		Title.Text = newTitle
 		updatesaves()
 	else
